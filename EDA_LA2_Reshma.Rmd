@@ -1,0 +1,310 @@
+---
+title: "EDA_LA_2"
+author: "Reshma Itagi"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+githublink: https://github.com/ReshmaCode/EDA_LA2
+dataset: Test_scores.csv
+---
+```{r}
+df = read.csv('test_scores.csv')
+head(df)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+temp = df %>% filter(df$school == "ANKYI")
+temp.aov = na.omit(aov(temp$pretest ~ temp$posttest, data = temp))
+temp.aov
+```
+
+
+```{r}
+ggplot(df,aes(x=pretest, fill=n_student, y=posttest))+geom_col(position ="dodge")
+```
+
+# Creating a Scatter Plot
+```{r}
+plot(df$pretest, df$posttest)
+# Scatter plot with base graphics
+```
+
+# Scatter plot with ggplot 2
+```{r}
+library(ggplot2)
+ggplot(df, aes(x = n_student, y = pretest)) +geom_point()
+
+ggplot(data = NULL, aes(x =df$pretest, y=df$posttest )) +
+geom_point()
+```
+
+# Creating a Line Graph
+```{r}
+plot(df$pretest,type = "l")
+```
+
+# Line graph with base graphics
+```{r}
+plot(head(df$pretest),head(df$posttest),  type = "l")
+points(head(df$pretest),head(df$posttest))
+```
+# Line graph with ggplot() and With points added to ggplot()
+```{r}
+ggplot(head(df,n=20), aes(x = pretest, y = posttest)) +geom_line()
+ggplot(head(df,n=20), aes(x = pretest, y = posttest)) +geom_line()+geom_point()
+```
+# Creating a Bar Graph
+```{r}
+barplot(head(df$n_student), names.arg = head(df$pretest))
+```
+# Generate a table of counts
+```{r}
+barplot(table(df$pretest))
+```
+# Laoding ggplot2() package
+```{r}
+library(ggplot2)
+```
+# Bar graph of values. This uses the dataset data frame, with the
+# "pretest" column for x values and the "posttest" column for y values.
+```{r}
+ggplot(df, aes(x = pretest, y = posttest)) +geom_col()
+```
+# Convert the x variable to a factor, so that it is treated as discrete
+```{r}
+ggplot(df, aes(x = factor(pretest), y = posttest)) +geom_col()
+```
+
+# Bar graph of counts. This uses the dataset data frame, with the "pretest" column for
+# x position. The y position is calculated by counting the number of rows for
+# each value of pretest.
+```{r}
+ggplot(df, aes(x = pretest)) +
+geom_bar()
+# Bar graph of counts
+ggplot(df, aes(x = factor(pretest))) +
+geom_bar()
+```
+# Creating a Histogram
+```{r}
+hist(df$pretest)
+# Specify approximate number of bins with breaks
+hist(df$pretest, breaks = 10)
+```
+#ggplot2 histogram with default bin width (left); With wider bins (right)
+```{r}
+ggplot(df, aes(x = pretest)) +
+geom_histogram()
+ggplot(df, aes(x = pretest)) +
+geom_histogram(binwidth = 4)
+```
+# Creating a Box Plot
+```{r}
+boxplot(head(df$n_student,n=500), head(df$pretest,n=500))
+```
+# Make box plots for multiple variables, by combining the variables with interaction()
+```{r}
+ggplot(head(df,n=100), aes(x = interaction(pretest, posttest), y = n_student)) +
+geom_boxplot()
+```
+# Making a Basic Histogram
+```{r}
+ggplot(df, aes(x = pretest)) +geom_histogram()
+```
+```{r}
+ggplot(df, aes(x= posttest)) +
+geom_histogram(binwidth = 5, fill = "white", colour = "black")
+```
+# Map pretest to fill, make the bars NOT stacked, and make them semitransparent
+```{r}
+ggplot(df, aes(x = pretest, fill ='pretest',colour='red' )) +
+geom_histogram(position = "identity", alpha = 0.4)
+```
+# Making a Density Curve
+```{r}
+ggplot(df, aes(x = n_student)) +geom_density()
+# expand_limits() increases the y range to include the value 0
+ggplot(df, aes(x = pretest)) +geom_line(stat = "density") +expand_limits(y = 0)
+```
+# Density curve with a smaller and larger value of adjust:
+```{r}
+ggplot(df, aes(x = posttest)) +geom_line(stat = "density") +
+geom_line(stat = "density", adjust = .25, colour = "red") +
+geom_line(stat = "density", adjust = 2, colour = "blue")
+```
+# This draws a blue polygon with geom_density(), then adds a line on top
+# Density curve with wider x limits and a semitransparent fill (left); In two
+# parts, with geom_density() and geom_line() (right)
+```{r}
+ggplot(df, aes(x = pretest)) +
+geom_density(fill = "blue", alpha = .2) +
+xlim(35, 105)
+ggplot(df, aes(x = pretest)) +
+geom_density(fill = "blue", alpha = .2, colour = NA) +
+xlim(35, 105) +
+geom_line(stat = "density")
+```
+# Density curve overlaid on a histogram
+```{r}
+ggplot(df, aes(x = pretest, y = ..density..)) +geom_histogram(fill = "cornsilk", colour = "grey60", size = .2) +geom_density() +xlim(35, 105)
+```
+# Making Multiple Density Curves from Grouped Data
+```{r}
+data5 <- df %>%
+mutate(n_student = as.factor(n_student)) # Convert n_student to a factor
+# Map n_student to colour
+ggplot(data5, aes(x = pretest, colour = "red")) +geom_density()
+# Map n_student to fill and make the fill semitransparent by setting alpha
+ggplot(data5, aes(x = pretest, fill = pretest)) +geom_density(alpha = .3)
+```
+# Making a Frequency Polygon
+```{r}
+ggplot(df, aes(x=pretest)) +
+geom_freqpoly()
+ggplot(faithful, aes(x = waiting)) +      
+geom_freqpoly(binwidth = 4)           #controlling bin width
+```
+# Divide the x-axis range into 15 bins
+```{r}
+binsize <- diff(range(df$pretest))/15
+ggplot(df, aes(x = pretest)) +
+geom_freqpoly(binwidth = binsize)
+```
+# Making a Basic Box Plot
+```{r}
+ggplot(df, aes(x = factor(n_student), y = pretest)) +
+geom_boxplot()
+```
+# Box plot with narrower boxes (1)
+# With smaller, hollow outlier points(2)
+```{r}
+ggplot(df, aes(x = factor(n_student), y = pretest)) +geom_boxplot(width = .5)
+ggplot(df, aes(x = factor(n_student), y = pretest)) +geom_boxplot(outlier.size = 1.5, outlier.shape = 21)
+```
+
+```{r}
+ggplot(df, aes(x = 1, y = pretest)) +geom_boxplot() +scale_x_continuous(breaks = NULL) +theme(axis.title.x = element_blank())
+```
+
+# Adding notches to a box plot to assess whether the medians are different.
+```{r}
+ggplot(df, aes(x = factor(n_student), y = pretest)) +geom_boxplot(notch = TRUE)
+```
+# Adding means to box plot
+```{r}
+ggplot(df, aes(x = factor(n_student), y = pretest)) +geom_boxplot() +stat_summary(fun = "mean", geom = "point", shape = 23, size = 3,
+fill = "white")
+```
+# Making a Violin Plot
+```{r}
+data6 <- ggplot(df, aes(x = pretest, y = n_student))
+data6+geom_violin()
+```
+# A violin plot with box plot overlaid on it
+```{r}
+data6+geom_violin() +geom_boxplot(width = .1, fill = "black", outlier.colour = NA) +
+stat_summary(fun= median, geom = "point", fill = "white", shape = 21,
+size = 2.5)
+```
+# A violin plot with tails
+```{r}
+data6+geom_violin(trim = FALSE)
+```
+# Violin plot with area proportional to number of observations
+```{r}
+data6 +geom_violin(scale = "count")
+```
+# Violin plot with
+```{r}
+# More smoothing
+data6+geom_violin(adjust = 2)
+# Less smoothing
+data6 +geom_violin(adjust = .5)
+
+```
+
+# Making a Dot Plot
+```{r}
+# Save a modified data set that only includes of males data for marks that contains > 50
+data7 <- df %>%
+filter(gender == "Male" & pretest > 50)
+```
+```{r}
+# Create a base ggplot object using `data7`, called `data7_p` (for data7 plot)
+data8 <- ggplot(data7,aes(x=pretest))
+data8+geom_dotplot()
+```
+# Dot plot with stackdir = “center” (1)
+# With stackdir = “centerwhole”(2)
+```{r}
+data8 +
+geom_dotplot(binwidth = .25, stackdir = "center") +
+scale_y_continuous(breaks = NULL) +
+theme(axis.title.y = element_blank())
+data8 +
+geom_dotplot(binwidth = .25, stackdir = "centerwhole") +
+scale_y_continuous(breaks = NULL) +
+theme(axis.title.y = element_blank())
+```
+# Making Multiple Dot Plots for Grouped Data
+```{r}
+ggplot(df, aes(x = gender, y = n_student)) +
+geom_dotplot(binaxis = "y", binwidth = .5, stackdir = "center")
+```
+# Dot plot overlaid on box plot
+```{r}
+ggplot(df, aes(x = gender, y = n_student)) +
+geom_boxplot(outlier.colour = NA, width = .4) +
+geom_dotplot(binaxis = "y", binwidth = .5, stackdir = "center", fill = NA)
+
+```
+# Dot plot next to box plot
+```{r}
+ggplot(df, aes(x = pretest, y = n_student)) +
+geom_boxplot(aes(x = as.numeric(pretest) + .2, group = pretest), width = .25) +geom_dotplot(aes(x = as.numeric(pretest) - .2, group = pretest),binaxis = "y",binwidth = .5,stackdir = "center") +scale_x_continuous(breaks = 1:nlevels(df$pretest),labels=levels(df$pretest)
+)
+```
+# Making a Density Plot of Two-Dimensional Data
+```{r}
+# Save a base plot object
+ ggplot(df, aes(x = pretest, y = posttest))+geom_point() +stat_density2d()
+# Contour lines, with "height" mapped to color
+ggplot(df, aes(x = pretest, y = posttest))+geom_point() +stat_density2d()+stat_density2d(aes(colour = ..level..))
+
+```
+# With ..density.. mapped to fill (1)
+# With points, and ..density.. mapped to alpha(2)
+```{r}
+# Map density estimate to fill color
+ggplot(df, aes(x = pretest, y = posttest))+geom_point() +stat_density2d()+stat_density2d(aes(fill = ..density..), geom = "raster", contour = FALSE)
+# With points, and map density estimate to alpha
+ggplot(df, aes(x = pretest, y = posttest))+geom_point() +stat_density2d()+geom_point() +stat_density2d(aes(alpha = ..density..), geom = "tile", contour = FALSE)
+```
+# Plotting a Function
+# # The data frame is only used for setting the range
+```{r}
+# The normal distribution
+ggplot(data.frame(x = c(-3, 3)), aes(x = x))  + stat_function(fun = dnorm)
+```
+```{r}
+# The t-distribution with df=2
+ggplot(data.frame(x = c(-3, 3)), aes(x = x)) + stat_function(fun = dt, args = list(df = 2))
+
+```
+
+
+
+
+
+
+
+
+
+
